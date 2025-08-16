@@ -12,17 +12,21 @@ HashSet::HashSet(const Rcpp::List &input) {
     data_.reserve(n);
 
     for (R_xlen_t i = 0; i < n; i++) {
-        data_.insert(input[i]);
+        data_.insert(Rcpp::RObject(input[i]));
     }
 }
 
 // scalar operations
 
 bool HashSet::contains(const Rcpp::RObject &q) const {
-    return data_.find(q) != data.end();
+    return data_.find(q) != data_.end();
 }
 
 void HashSet::insert(const Rcpp::RObject v) { data_.insert(v); }
+
+void HashSet::remove(const Rcpp::RObject &v) { data_.erase(v); }
+
+// bulk ops
 
 Rcpp::LogicalVector HashSet::lookup(const Rcpp::List &Q) const {
     R_xlen_t n = Q.size();
@@ -38,9 +42,9 @@ Rcpp::LogicalVector HashSet::lookup(const Rcpp::List &Q) const {
     return res;
 }
 
-void HashSet::insert(const Rcpp::List &V) {
+void HashSet::update(const Rcpp::List &V) {
     for (const auto &v : V) {
-        data_.insert(v);
+        data_.insert(Rcpp::RObject(v));
     }
 }
 
