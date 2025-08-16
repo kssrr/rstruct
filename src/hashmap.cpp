@@ -16,7 +16,7 @@ class HashMap {
             Rcpp::stop("All elements must be named");
         }
         data_.reserve(input.size());
-        for (size_t i = 0; i < input.size(); ++i) {
+        for (R_xlen_t i = 0; i < input.size(); ++i) {
             data_[Rcpp::as<std::string>(names[i])] = input[i];
         }
     }
