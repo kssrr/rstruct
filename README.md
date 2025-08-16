@@ -14,14 +14,14 @@ hm[["apple"]]
 #> [1] 1 2 3
 
 hm[c("apple", "cherry", "does not exist")]
-#>$apple
-#>[1] 1 2 3
+#> $apple
+#> [1] 1 2 3
 #>
-#>$cherry
-#>[1] "red"
+#> $cherry
+#> [1] "red"
 #>
-#>$`does not exist`
-#>NULL
+#> $`does not exist`
+#> NULL
 ```
 
 Keys have to be `character`, but can hold arbitrary R objects as values:
