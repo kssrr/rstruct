@@ -1,14 +1,17 @@
 #' @export
+#' @method print Rcpp_rstruct_hashmap
 print.Rcpp_rstruct_hashmap <- function(obj) {
   obj$print()
 }
 
 #' @export
+#' @method [[ Rcpp_rstruct_hashmap
 `[[.Rcpp_rstruct_hashmap` <- function(obj, key) {
   obj$get(key)
 }
 
 #' @export
+#' @method [ Rcpp_rstruct_hashmap
 `[.Rcpp_rstruct_hashmap` <- function(obj, keys) {
   obj$retrieve(keys)
 }
