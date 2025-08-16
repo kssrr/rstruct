@@ -17,6 +17,13 @@ print.Rcpp_rstruct_hashmap <- function(obj) {
 }
 
 #' @export
+#' @method [[<- Rcpp_rstruct_hashmap
+`[[<-.Rcpp_rstruct_hashmap` <- function(obj, key, value) {
+  obj$insert(key, value)
+  invisible(obj)
+}
+
+#' @export
 hashmap <- function(input = NULL) {
   if (is.null(input)) {
       return(new(rstruct_hashmap))
