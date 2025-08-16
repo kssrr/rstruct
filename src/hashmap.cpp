@@ -38,21 +38,15 @@ void HashMap::print() const {
         return;
     }
 
-    Rcpp::CharacterVector keys(data_.size());
-    Rcpp::List values(data_.size());
-    
-    size_t i = 0;
     for (const auto& kv : data_) {
-        keys[i] = kv.first;
-        values[i] = kv.second;
-        ++i;
-    }
-    
-    values.attr("names") = keys;
+        Rcpp::Rcout << "[[\"" << kv.first << "\"]]\n";
 
-    // dispatch to R print
-    Rcpp::Function print("print");
-    print(values);
+        // use R's print() to show the value nicely
+        Rcpp::Function print("print");
+        print(kv.second);
+
+        Rcpp::Rcout << "\n";
+    }
 }
 
 // bulk operations
