@@ -30,4 +30,4 @@ Keys have to be `character`, but can hold arbitrary R objects as values:
 hm[["banana"]] <- data.frame(a = 1:5, b = 6:10)
 ```
 
-Performance on scalar operations is similar to [r2r](https://github.com/vgherard/r2r), but rstruct is significantly faster on bulk operations.
+Performance on scalar operations is similar to [r2r](https://github.com/vgherard/r2r), but rstruct is significantly faster on bulk operations as these are implemented in C++ instead of R.
