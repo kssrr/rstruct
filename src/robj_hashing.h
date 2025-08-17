@@ -1,3 +1,5 @@
+// [[Rcpp::depends(RApiSerialize)]]
+
 /*
  * There is no built-in way to hash Rcpp::RObj, but we need one to 
  * built a hashset that can hold arbitrary R objects. Here, we serialize an
@@ -5,31 +7,22 @@
  *
  */
 
+
 #include <Rcpp.h>
 #include <openssl/sha.h>
 #include <iomanip>
 #include <sstream>
+#include <RApiSerializeAPI.h>
 
-
-// The serialization is suboptimal because we have to call
-// into R; still need to find a lower-level way
-// to serialize R objects (this does not seem to be exposed)
-
-
-inline Rcpp::RawVector serializeRcpp(Rcpp::RObject obj) {
-  static Rcpp::Function serialize("serialize");
-  return serialize(obj, R_NilValue);
-}
-
-inline Rcpp::RObject unserializeRcpp(Rcpp::RawVector data) {
-  static Rcpp::Function unserialize("unserialize");
-  return unserialize(data);
+inline Rcpp::RawVector serializeRcpp(const Rcpp::RObject& obj) {
+  SEXP res = R::serializeToRaw(obj, R_NilValue, R_NilValue);
+  return Rcpp::RawVector(res);
 }
 
 std::string sha256Raw(Rcpp::RawVector data) {
   unsigned char hash[SHA256_DIGEST_LENGTH];
   SHA256(RAW(data), data.size(), hash);
-
+  
   // Convert hash bytes to hex string
   std::stringstream ss;
   for(int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
@@ -42,3 +35,4 @@ std::string digestRObject(Rcpp::RObject obj) {
   Rcpp::RawVector serialized = serializeRcpp(obj);
   return sha256Raw(serialized);
 }
+
