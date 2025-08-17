@@ -14,13 +14,15 @@
 // The serialization is suboptimal because we have to call
 // into R; still need to find a lower-level way
 // to serialize R objects (this does not seem to be exposed)
-Rcpp::RawVector serializeRcpp(Rcpp::RObject obj) {
-  Rcpp::Function serialize("serialize");
+
+
+inline Rcpp::RawVector serializeRcpp(Rcpp::RObject obj) {
+  static Rcpp::Function serialize("serialize");
   return serialize(obj, R_NilValue);
 }
 
-Rcpp::RObject unserializeRcpp(Rcpp::RawVector data) {
-  Rcpp::Function unserialize("unserialize");
+inline Rcpp::RObject unserializeRcpp(Rcpp::RawVector data) {
+  static Rcpp::Function unserialize("unserialize");
   return unserialize(data);
 }
 
