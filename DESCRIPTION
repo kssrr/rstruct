@@ -1,14 +1,13 @@
 Package: rstruct
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: Fast lookup data structures for R
 Version: 1.0
 Date: 2025-08-15
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one
-        or more full sentences.
+Author: Lennart Kasserra
+Maintainer: Lennart Kasserra <lennart.kasserra@gmail.com>
+Description: Hash maps & tables for R wrapping std::unordered_map and std::unordered_set from the C++ STL, optimized for bulk retrieval & lookup operations.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.12)
-LinkingTo: Rcpp
+Imports: Rcpp (>= 1.0.12), RApiSerialize (>= 0.1.4)
+LinkingTo: Rcpp, RApiSerialize
 RoxygenNote: 7.3.1
 Encoding: UTF-8
