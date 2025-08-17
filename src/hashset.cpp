@@ -2,6 +2,7 @@
 #include <unordered_set>
 
 #include "hashset.h"
+#include "robj_hashing.h"
 
 // Constructors
 
@@ -12,19 +13,19 @@ HashSet::HashSet(const Rcpp::List &input) {
     data_.reserve(n);
 
     for (R_xlen_t i = 0; i < n; i++) {
-        data_.insert(Rcpp::RObject(input[i]));
+        data_.insert(digestRObject(Rcpp::RObject(input[i])));
     }
 }
 
 // scalar operations
 
 bool HashSet::contains(const Rcpp::RObject &q) const {
-    return data_.find(q) != data_.end();
+    return data_.find(digestRObject(q)) != data_.end();
 }
 
-void HashSet::insert(const Rcpp::RObject v) { data_.insert(v); }
+void HashSet::insert(const Rcpp::RObject v) { data_.insert(digestRObject(v)); }
 
-void HashSet::remove(const Rcpp::RObject &v) { data_.erase(v); }
+void HashSet::remove(const Rcpp::RObject &v) { data_.erase(digestRObject(v)); }
 
 // bulk ops
 
@@ -33,7 +34,7 @@ Rcpp::LogicalVector HashSet::lookup(const Rcpp::List &Q) const {
     Rcpp::LogicalVector res(n);
 
     for (R_xlen_t i = 0; i < n; i++) {
-        res[i] = data_.find(Q[i]) != data_.end();
+        res[i] = data_.find(digestRObject(Q[i])) != data_.end();
     }
 
     // not returning a named vector here since the entries
@@ -44,7 +45,7 @@ Rcpp::LogicalVector HashSet::lookup(const Rcpp::List &Q) const {
 
 void HashSet::update(const Rcpp::List &V) {
     for (const auto &v : V) {
-        data_.insert(Rcpp::RObject(v));
+        data_.insert(digestRObject(Rcpp::RObject(v)));
     }
 }
 
