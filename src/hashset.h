@@ -1,11 +1,10 @@
 #pragma once
 
 #include <Rcpp.h>
-#include <string>
 #include <unordered_set>
 
 class HashSet {
-    std::unordered_set<std::string> data_;
+    std::unordered_set<uint32_t> data_;
   public:
     HashSet();
     HashSet(const Rcpp::List &input);
