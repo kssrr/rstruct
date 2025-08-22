@@ -5,7 +5,7 @@
 #include <string>
 
 class HashMap {
-    std::unordered_map<std::string, Rcpp::RObject> data_;
+    std::unordered_map<std::string, SEXP> data_;
   
   public:
     HashMap() {}
@@ -21,35 +21,17 @@ class HashMap {
         }
     }
     
-    bool contains(const std::string &q) const { return data_.find(q) != data_.end(); }
+    inline bool contains(const std::string &q) const { return data_.find(q) != data_.end(); }
     
-    void insert(const std::string &k, Rcpp::RObject v) { data_[k] = v; }
+    inline void insert(const std::string &k, SEXP v) { data_[k] = v; }
     
-    Rcpp::RObject get(const std::string &q) const {
+    inline SEXP get(const std::string &q) const {
         auto it = data_.find(q);
-        if (it == data_.end()) {
-            return R_NilValue;
-        }
-        return it->second;
+        if (it != data_.end()) return it->second;
+        return R_NilValue;
     }
     
-    void print() const {
-        Rcpp::Rcout << "*Rcpp Hash Map*\n\n";
-        if (data_.empty()) {
-            Rcpp::Rcout << "<empty>\n";
-            return;
-        }
-    
-        for (const auto& kv : data_) {
-            Rcpp::Rcout << "[[\"" << kv.first << "\"]]\n";
-    
-            // use R's print() to show the value nicely
-            Rcpp::Function print("print");
-            print(kv.second);
-    
-            Rcpp::Rcout << "\n";
-        }
-    }
+    void print() const { Rcpp::Rcout << "*Rcpp Hash Map*\n\n"; }
     
     // bulk operations
     
