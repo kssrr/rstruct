@@ -64,9 +64,14 @@ class HashMap {
         return R_NilValue;
     }
     
-    void print() const { Rcpp::Rcout << "*Rcpp Hash Map*\n\n"; }
+    void print() const {
+        Rcpp::Rcout << "C++ Hash Map\n\n";
+        for (const auto& kv : data_) {
+            Rcpp::Rcout << "[[" << Rcpp::as<std::string>(kv.first) << "]]\n" 
+                        << Rcpp::RObject(kv.second) << "\n\n";
+        }
+    }
     
-    // --- bulk insertion ---
     void update(const Rcpp::List &input) {
         Rcpp::CharacterVector names = input.names();
         size_t n = input.size();
