@@ -67,8 +67,9 @@ class HashMap {
     void print() const {
         Rcpp::Rcout << "C++ Hash Map\n\n";
         for (const auto& kv : data_) {
-            Rcpp::Rcout << "[[" << Rcpp::as<std::string>(kv.first) << "]]\n" 
-                        << Rcpp::RObject(kv.second) << "\n\n";
+            Rcpp::Rcout << "[[\"" << Rcpp::as<std::string>(kv.first) << "\"]]\n";
+            Rf_PrintValue(kv.second);
+            Rcpp::Rcout << "\n";
         }
     }
     
