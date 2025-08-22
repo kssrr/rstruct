@@ -1,11 +1,22 @@
 #pragma once
-
 #include <Rcpp.h>
 #include <unordered_map>
-#include <string>
+
+// Hash and equality for CHARSXP keys
+struct SEXPHash {
+    std::size_t operator()(SEXP s) const noexcept {
+        return std::hash<const void*>()(reinterpret_cast<const void*>(s));
+    }
+};
+
+struct SEXPEqual {
+    bool operator()(SEXP a, SEXP b) const noexcept {
+        return a == b; // pointer equality is valid for CHARSXP
+    }
+};
 
 class HashMap {
-    std::unordered_map<std::string, SEXP> data_;
+    std::unordered_map<SEXP, SEXP, SEXPHash, SEXPEqual> data_;
   
   public:
     HashMap() {}
@@ -17,59 +28,74 @@ class HashMap {
         }
         data_.reserve(input.size());
         for (R_xlen_t i = 0; i < input.size(); ++i) {
-            data_[Rcpp::as<std::string>(names[i])] = input[i];
+            SEXP key = names[i]; // already a CHARSXP
+            data_[key] = input[i];
         }
     }
     
-    inline bool contains(const std::string &q) const { return data_.find(q) != data_.end(); }
+    inline bool contains(SEXP key) const {
+        return data_.find(key) != data_.end();
+    }
     
-    inline void insert(const std::string &k, SEXP v) { data_[k] = v; }
+    inline void insert(SEXP key, SEXP value) {
+        data_[key] = value;
+    }
     
-    inline SEXP get(const std::string &q) const {
-        auto it = data_.find(q);
+    inline SEXP get(SEXP key) const {
+        // chr vectors are STRSEXP, a vector like VECSXP
+        // where each element is a CHARSXP, which is
+        // what we are expecting as key. Since R has no concept
+        // of scalars, we get a lenght-1 character vector.
+        // Getting the first (only) element as CHARSXP:
+        key = STRING_ELT(key, 0);
+        auto it = data_.find(key);
         if (it != data_.end()) return it->second;
         return R_NilValue;
     }
     
     void print() const { Rcpp::Rcout << "*Rcpp Hash Map*\n\n"; }
     
-    // bulk operations
-    
-    // bulk insertion
+    // --- bulk insertion ---
     void update(const Rcpp::List &input) {
         Rcpp::CharacterVector names = input.names();
         size_t n = input.size();
         data_.reserve(data_.size() + n);
     
         for (size_t i = 0; i < n; i++) {
-            data_[Rcpp::as<std::string>(names[i])] = input[i];
+            SEXP key = names[i]; 
+            data_[key] = input[i];
         }
     }
     
-    // bulk lookup
+    // --- bulk lookup ---
     Rcpp::LogicalVector lookup(const Rcpp::CharacterVector &Q) const {
         size_t n = Q.size();
         Rcpp::LogicalVector res(n);
     
         for (size_t i = 0; i < n; i++) {
-            res[i] = data_.find(Rcpp::as<std::string>(Q[i])) != data_.end();
+            SEXP key = Q[i];
+            res[i] = contains(key);
         }
     
-        res.attr("names") = Q; // return named vector
+        res.attr("names") = Q; 
         return res;
     }
     
-    // bulk retrieval
+    // --- bulk retrieval ---
     Rcpp::List retrieve(const Rcpp::CharacterVector &Q) const {
         size_t n = Q.size();
         Rcpp::List res(n);
     
         for (size_t i = 0; i < n; i++) {
-            res[i] = get(Rcpp::as<std::string>(Q[i]));
+            // cannot use `get` here because of the difference
+            // between STRSXP & CHARSXP.
+            SEXP key = Q[i];
+            auto it = data_.find(key);
+            res[i] = it != data_.end() ? it->second : R_NilValue;
         }
     
-        res.attr("names") = Q; // return named list
+        res.attr("names") = Q;
         return res;
     }
-    
 };
+
