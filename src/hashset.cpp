@@ -1,54 +1,51 @@
 #include <Rcpp.h>
-
 #include "hashset.h"
 
-using HashNum = HashSetNum;
+// The `HashSet`-template is defined in `hashset.h`
 
+using HashSetNum     = HashSet<Rcpp::NumericVector,   double>;
+using HashSetChr     = HashSet<Rcpp::CharacterVector, std::string>;
+using HashSetGeneric = HashSet<Rcpp::List,            uint32_t>;
+
+// Modules
 RCPP_MODULE(HashSetNumModule) {
-    using namespace Rcpp;
-
-    class_<HashNum>("HashSetNum")
+  using namespace Rcpp;
+  
+  class_<HashSetNum>("rstruct_hashset_num")
     .constructor()
     .constructor<NumericVector>()
-    .method("contains", &HashNum::contains)
-    .method("insert", &HashNum::insert)
-    .method("remove", &HashNum::remove)
-    .method("lookup", &HashNum::lookup)
-    .method("update", &HashNum::update)
-    .method("print", &HashNum::print)
-    ;
+    .method("contains", &HashSetNum::contains)
+    .method("insert",   &HashSetNum::insert)
+    .method("remove",   &HashSetNum::remove)
+    .method("lookup",   &HashSetNum::lookup)
+    .method("update",   &HashSetNum::update)
+    .method("print",    &HashSetNum::print);
 }
-
-using HashChr = HashSetChr;
 
 RCPP_MODULE(HashSetChrModule) {
-    using namespace Rcpp;
-
-    class_<HashChr>("HashSetChr")
+  using namespace Rcpp;
+  
+  class_<HashSetChr>("rstruct_hashset_chr")
     .constructor()
     .constructor<CharacterVector>()
-    .method("contains", &HashChr::contains)
-    .method("insert", &HashChr::insert)
-    .method("remove", &HashChr::remove)
-    .method("lookup", &HashChr::lookup)
-    .method("update", &HashChr::update)
-    .method("print", &HashChr::print)
-    ;
+    .method("contains", &HashSetChr::contains)
+    .method("insert",   &HashSetChr::insert)
+    .method("remove",   &HashSetChr::remove)
+    .method("lookup",   &HashSetChr::lookup)
+    .method("update",   &HashSetChr::update)
+    .method("print",    &HashSetChr::print);
 }
 
-using HashGen = HashSetGeneric;
-
 RCPP_MODULE(HashSetGenericModule) {
-    using namespace Rcpp;
-
-    class_<HashGen>("HashSetGeneric")
+  using namespace Rcpp;
+  
+  class_<HashSetGeneric>("rstruct_hashset_generic")
     .constructor()
     .constructor<List>()
-    .method("contains", &HashGen::contains)
-    .method("insert", &HashGen::insert)
-    .method("remove", &HashGen::remove)
-    .method("lookup", &HashGen::lookup)
-    .method("update", &HashGen::update)
-    .method("print", &HashGen::print)
-    ;
+    .method("contains", &HashSetGeneric::contains)
+    .method("insert",   &HashSetGeneric::insert)
+    .method("remove",   &HashSetGeneric::remove)
+    .method("lookup",   &HashSetGeneric::lookup)
+    .method("update",   &HashSetGeneric::update)
+    .method("print",    &HashSetGeneric::print);
 }
