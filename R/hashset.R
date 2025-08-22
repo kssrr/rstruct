@@ -1,38 +1,41 @@
-#' @export
-#' @method print Rcpp_rstruct_hashset
-print.Rcpp_rstruct_hashset <- function(obj) {
-  obj$print()
-}
+#' @title Hashset classes and methods
+#' @description Constructors and methods for rstruct hashsets.
+#' @name hashset
+
+#' @exportClass rstruct_hashset
+setClass("rstruct_hashset", contains = "VIRTUAL")
 
 #' @export
-#' @method [[ Rcpp_rstruct_hashset
-`[[.Rcpp_rstruct_hashset` <- function(obj, key) {
-  obj$contains(key)
-}
+setGeneric("hashset", function(x) standardGeneric("hashset"))
+#' @export
+setMethod("hashset", "numeric", function(x) new(rstruct_hashset_num, x))
+#' @export
+setMethod("hashset", "character", function(x) new(rstruct_hashset_chr, x))
+#' @export
+setMethod("hashset", "list", function(x) new(rstruct_hashset_generic, x))
+#' @export
+setMethod("hashset", "missing", function(x) {
+  message(paste0(
+    "Empty hashsets are initialized to store arbitrary R objects by default.\n",
+    "This might not always be optimal in terms of performance."
+  ))
+  new(rstruct_hashset_generic)
+})
 
 #' @export
-#' @method [ Rcpp_rstruct_hashset
-`[.Rcpp_rstruct_hashset` <- function(obj, keys) {
-  obj$lookup(keys)
-}
-
-#' @export
-#' @method [[<- Rcpp_rstruct_hashset
-`[[<-.Rcpp_rstruct_hashset` <- function(obj, old, new) {
-  obj$remove(old)
-  obj$insert(new)
-  invisible(obj)
-}
-
-#' @export
-hashset <- function(input = NULL) {
-  if (is.null(input)) {
-    return(new(rstruct_hashset))
-  } 
-  
-  if (!is.list(input)) {
-    stop("Input needs to be a list.")
+setMethod(
+  "[", 
+  signature(x = "rstruct_hashset", i = "ANY"),
+  function(x, i, ...) {
+    x$lookup(i)
   }
-  
-  new(rstruct_hashset, input)
-}
+)
+
+#' @export
+setMethod(
+  "[[", 
+  signature(x = "rstruct_hashset", i = "ANY"),
+  function(x, i, ...) {
+    x$contains(i)
+  }
+)
