@@ -2,3 +2,4 @@ src/*.o
 src/RcppExports*
 src/rstruct*
 .Rhistory
+.clang-format
