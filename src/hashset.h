@@ -27,8 +27,8 @@
 // doing anyways imo).
 
 inline Rcpp::RawVector serializeRcpp(const Rcpp::RObject& obj) {
-  SEXP res = R::serializeToRaw(obj, R_NilValue, R_NilValue);
-  return Rcpp::RawVector(res);
+    SEXP res = R::serializeToRaw(obj, R_NilValue, R_NilValue);
+    return Rcpp::RawVector(res);
 }
 
 uint32_t digestRObject(const Rcpp::RObject &obj) {
@@ -49,27 +49,27 @@ uint32_t digestRObject(const Rcpp::RObject &obj) {
 
 template <typename RType, typename CppType>
 struct Api {
-  using ArgType = const CppType&;
-  static CppType fromR(const typename RType::stored_type& x) { return x; }
-  static CppType toKey(const CppType& x) { return x; }
+    using ArgType = const CppType&;
+    static CppType fromR(const typename RType::stored_type& x) { return x; }
+    static CppType toKey(const CppType& x) { return x; }
 };
 
 // API Rcpp::CharacterVector -> std::string
 template <>
 struct Api<Rcpp::CharacterVector, std::string> {
-  using ArgType = const std::string&;
+    using ArgType = const std::string&;
   
-  static std::string fromR(SEXP x) { return Rcpp::as<std::string>(x); }
-  static std::string toKey(const std::string& x) { return x; }
+    static std::string fromR(SEXP x) { return Rcpp::as<std::string>(x); }
+    static std::string toKey(const std::string& x) { return x; }
 };
 
 // API Rcpp::List (holding arbitrary R objects) -> 32bit hash digest
 template <>
 struct Api<Rcpp::List, uint32_t> {
-  using ArgType = const Rcpp::RObject&;
+    using ArgType = const Rcpp::RObject&;
   
-  static uint32_t fromR(SEXP x) { return digestRObject(x); }
-  static uint32_t toKey(const Rcpp::RObject& x) { return digestRObject(x); }
+    static uint32_t fromR(SEXP x) { return digestRObject(x); }
+    static uint32_t toKey(const Rcpp::RObject& x) { return digestRObject(x); }
 };
 
 // Hash Set template
@@ -78,48 +78,48 @@ struct Api<Rcpp::List, uint32_t> {
 // API we layed out above. 
 template <typename RType, typename CppType>
 class HashSet {
-  using ElemApi = Api<RType, CppType>;
+    using ElemApi = Api<RType, CppType>;
   
-protected:
-  std::unordered_set<CppType> data_;
+  protected:
+    std::unordered_set<CppType> data_;
   
-public:
-  HashSet() = default;
+  public:
+    HashSet() = default;
   
-  HashSet(const RType &input) {
-    R_xlen_t n = input.size();
-    data_.reserve(n);
-    for (R_xlen_t i = 0; i < n; i++)
-      data_.insert(ElemApi::fromR(input[i]));
-  }
-  
-  bool contains(typename ElemApi::ArgType q) const {
-    return data_.find(ElemApi::toKey(q)) != data_.end();
-  }
-  
-  void insert(typename ElemApi::ArgType v) {
-    data_.insert(ElemApi::toKey(v));
-  }
-  
-  void remove(const RType &V) {
-    for (R_xlen_t i = 0; i < V.size(); i++)
-      data_.erase(ElemApi::fromR(V[i]));
-  }
-  
-  Rcpp::LogicalVector lookup(const RType &Q) const {
-    R_xlen_t n = Q.size();
-    Rcpp::LogicalVector res(n);
-    for (R_xlen_t i = 0; i < n; i++)
-      res[i] = data_.find(ElemApi::fromR(Q[i])) != data_.end();
-    return res;
-  }
-  
-  void update(const RType &V) {
-    for (R_xlen_t i = 0; i < V.size(); i++)
-      data_.insert(ElemApi::fromR(V[i]));
-  }
-  
-  void print() const {
-    Rcpp::Rcout << "C++ hash set with " << data_.size() << " elements.\n";
-  }
+    HashSet(const RType &input) {
+        R_xlen_t n = input.size();
+        data_.reserve(n);
+        for (R_xlen_t i = 0; i < n; i++)
+        data_.insert(ElemApi::fromR(input[i]));
+    }
+    
+    bool contains(typename ElemApi::ArgType q) const {
+        return data_.find(ElemApi::toKey(q)) != data_.end();
+    }
+    
+    void insert(typename ElemApi::ArgType v) {
+        data_.insert(ElemApi::toKey(v));
+    }
+    
+    void remove(const RType &V) {
+        for (R_xlen_t i = 0; i < V.size(); i++)
+        data_.erase(ElemApi::fromR(V[i]));
+    }
+    
+    Rcpp::LogicalVector lookup(const RType &Q) const {
+        R_xlen_t n = Q.size();
+        Rcpp::LogicalVector res(n);
+        for (R_xlen_t i = 0; i < n; i++)
+        res[i] = data_.find(ElemApi::fromR(Q[i])) != data_.end();
+        return res;
+    }
+    
+    void update(const RType &V) {
+        for (R_xlen_t i = 0; i < V.size(); i++)
+        data_.insert(ElemApi::fromR(V[i]));
+    }
+    
+    void print() const {
+        Rcpp::Rcout << "C++ hash set with " << data_.size() << " elements.\n";
+    }
 };
