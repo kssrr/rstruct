@@ -1,2 +1,1 @@
-PKG_CXXFLAGS = -I/usr/include/openssl
-PKG_LIBS = -lssl -lcrypto
+PKG_CXXFLAGS = -O3
