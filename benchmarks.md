@@ -7,6 +7,9 @@ library(rstruct)
 library(r2r)
 library(hash)
 library(microbenchmark)
+library(fastmap)
+
+library(ggplot2)
 
 set.seed(42)
 
@@ -27,7 +30,8 @@ set.seed(840)
 keys <- random_keys(N)
 values <- rnorm(N)
 
-# hash maps:
+# Hash maps
+
 m_rstruct <- rstruct::hashmap(as.list(setNames(values, keys)))
 
 m_r2r <- r2r::hashmap()
@@ -35,8 +39,14 @@ m_r2r[keys] <- values
 
 m_hash <- hash::hash()
 m_hash[keys] <- values
+m_fastmap <- fastmap::fastmap()
 
-# hash sets (only r2r & rstruct):
+for (i in seq_along(keys)) {
+  m_fastmap$set(keys[i], values[i])
+}
+
+# Hash sets (only rstruct & r2r)
+
 hs_rstruct <- rstruct::hashset(keys)
 hs_r2r <- r2r::hashset(keys)
 ```
@@ -58,15 +68,19 @@ random_lookup <- microbenchmark(
   `hash` = {
     m_hash[[sample(keys, 1)]]
   },
+  `fastmap` = {
+    m_fastmap$get(sample(keys, 1))
+  },
   times = 1e3
 )
 
 random_lookup
 #> Unit: microseconds
 #>     expr    min      lq     mean  median      uq     max neval cld
-#>  rstruct 31.873 38.5360 46.46948 41.2805 46.4955 788.382  1000 a  
-#>      r2r 27.877 34.5465 41.62944 37.0495 41.7200 242.572  1000  b 
-#>     hash 15.369 19.3085 24.89275 22.0195 25.4435 274.339  1000   c
+#>  rstruct 30.315 36.0995 41.66674 38.7310 41.6125 856.104  1000 a  
+#>      r2r 27.720 32.8780 37.53605 35.1035 37.5250 307.261  1000  b 
+#>     hash 14.748 18.4100 22.27964 20.7575 22.5665 328.557  1000   c
+#>  fastmap 13.818 16.8320 20.49452 19.3845 21.4940 140.817  1000   c
 ```
 
 
@@ -85,15 +99,19 @@ bulk_lookup <- microbenchmark(
   `hash` = {
     m_hash[keys]
   },
+  `fastmap` = {
+    m_fastmap$mget(keys)
+  },
   times = 50
 )
 
 bulk_lookup
 #> Unit: microseconds
-#>     expr        min         lq        mean     median         uq        max neval cld
-#>  rstruct    368.383    463.613    538.8295    529.122    567.298   1567.334    50 a  
-#>      r2r 145451.238 162715.731 179429.3425 174064.287 190938.734 327968.390    50  b 
-#>     hash 105089.626 124270.546 131683.5944 131638.968 139596.639 177181.197    50   c
+#>     expr        min         lq        mean      median         uq        max neval  cld
+#>  rstruct    519.882    670.962    777.4081    711.8475    774.145   1616.488    50 a   
+#>      r2r 151023.863 186794.500 211503.9563 204688.5570 222825.869 341436.095    50  b  
+#>     hash 105025.494 137638.709 156059.0240 152346.3065 168229.644 232997.247    50   c 
+#>  fastmap  23327.795  28004.905  34033.9940  30370.3995  36015.858  78538.938    50    d
 ```
 
 ## Hash sets

@@ -4,7 +4,7 @@ Fast lookup data structures for R (hash maps/"dictionaries" & hash sets) with av
 
 Instead of being based on R's built-in environment data structure, like the [hash](https://github.com/decisionpatterns/r-hash) & [r2r](https://github.com/vgherard/r2r) packages, it wraps `std::unordered_map` and `std::unordered_set` from the C++ STL. 
 
-Performance on scalar operations (random individual lookup) is similar to `hash` & `r2r`, but `rstruct` is significantly faster on bulk operations, as these are implemented in C++.
+Performance on scalar operations (random individual lookup) is similar to `hash`, `r2r` & [`fastmap`](https://github.com/r-lib/fastmap), but `rstruct` is significantly faster on bulk operations, as these are implemented in C++. You can check the [benchmarks](https://github.com/kssrr/rstruct/blob/main/benchmarks.md).
 
 ## Installation
 
@@ -77,4 +77,4 @@ hs_num <- rstruct::hashset(1:10)
 
 ## Motivation
 
-There are existing packages (mentioned above), which build on R's `environment`-data structure, which is implemented internally as a hash table (see [here](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Hash-table)). However, for bulk operations (lookup, retrieval, insertion), those implementations rely on R's built-in methods of iterations (either loops or functionals, like `sapply`) which introduces massive overhead (`rstruct` is orders of magnitude faster on those operations).
+There are existing packages (mentioned above), which build on R's `environment`-data structure, which is implemented internally as a hash table (see [here](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Hash-table)). However, for bulk operations (lookup, retrieval, insertion), those implementations rely on R's built-in methods of iterations (either loops or functionals, like `sapply`) which introduces massive overhead (`rstruct` is orders of magnitude faster on those operations). `fastmap` is also written in C++, but is still outperformed by `rstruct` on bulk operations by quite a large margin.
