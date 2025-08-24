@@ -4,7 +4,7 @@ Fast lookup data structures for R (hash maps/"dictionaries" & hash sets) with av
 
 Instead of being based on R's built-in environment data structure, like the [hash](https://github.com/decisionpatterns/r-hash) & [r2r](https://github.com/vgherard/r2r) packages, it wraps `std::unordered_map` and `std::unordered_set` from the C++ STL. 
 
-Performance on scalar operations (random individual lookup) is similar to `hash`, `r2r` & [`fastmap`](https://github.com/r-lib/fastmap), but `rstruct` is significantly faster on bulk operations, as these are implemented in C++. You can check the [benchmarks](https://github.com/kssrr/rstruct/blob/main/benchmarks.md).
+Performance on scalar operations (random individual lookup) is similar to `hash`, `r2r` & [`fastmap`](https://github.com/r-lib/fastmap), but `rstruct` is significantly faster on bulk operations, as those are fully implemented in C++. You can check the [benchmarks](https://github.com/kssrr/rstruct/blob/main/benchmarks.md).
 
 ## Installation
 
