@@ -9,5 +9,5 @@ Description: Hash maps & tables for R wrapping std::unordered_map and std::unord
 License: GPL (>= 2)
 Imports: Rcpp (>= 1.0.12), RApiSerialize (>= 0.1.4)
 LinkingTo: Rcpp, RApiSerialize
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Encoding: UTF-8
